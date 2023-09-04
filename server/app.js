@@ -20,17 +20,10 @@ mongoose
     console.error('Error connecting to MongoDB:', error);
   });
 
-app.get('/', (req, res) => {
-  Todo.find().then((result) => {
-    res.json({ todos: result });
-    console.log(result);
-  });
-});
+app.use(express.json());
 
-// app.use(express.json());
+app.use('/', todoRoutes);
 
-// app.use('/todos', todoRoutes);
-
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
   console.log('listening on port 3000');
 });
