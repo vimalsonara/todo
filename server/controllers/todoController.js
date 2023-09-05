@@ -5,7 +5,7 @@ const list_todos = (req, res) => {
   Todo.find()
     .sort({ createdAt: -1 })
     .then((result) => {
-      res.json({ title: 'All Todos', todos: result });
+      res.json({ todos: result });
       console.log('list todos');
     })
     .catch((error) => {
