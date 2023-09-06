@@ -37,7 +37,7 @@ const delete_todo = (req, res) => {
       if (!result) {
         res.status(404).json({ error: 'Todo not found' });
       } else {
-        res.status(204).json();
+        res.status(200).json({ message: 'Todo deleted successfully.' });
       }
     })
     .catch((error) => {
