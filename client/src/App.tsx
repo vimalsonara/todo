@@ -1,9 +1,9 @@
-import TodoItem from './components/TodoItem';
+import TodoList from './pages/TodoList';
 
 function App() {
   return (
     <div className="h-screen bg-neutral-900">
-      <TodoItem title={'Sample Title'} description={'Sample Description'} />
+      <TodoList />
     </div>
   );
 }
