@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import TodoItem from '@/components/TodoItem';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface Todo {
   _id: string;
@@ -40,20 +42,30 @@ function TodoList() {
   };
 
   return (
-    <div className=" flex justify-center flex-col gap-2 pt-3">
-      {todos.length > 0
-        ? todos.map((todo) => (
-            <div key={todo._id} className="flex justify-center">
-              <TodoItem
-                title={todo.todo}
-                description={todo.description}
-                id={todo._id}
-                onDelete={handleDeleteTodo}
-              />
-            </div>
-          ))
-        : 'No todo'}
-      <Toaster />
+    <div>
+      <div className=" flex justify-center items-center gap-5">
+        <h1 className="text-center justify-self-center text-2xl font-bold text-white py-3">
+          Todolist
+        </h1>
+        <Link to={'/addtodo'}>
+          <Button variant={'outline'}>Add</Button>
+        </Link>
+      </div>
+      <div className=" flex justify-center flex-col gap-2 pt-3">
+        {todos.length > 0
+          ? todos.map((todo) => (
+              <div key={todo._id} className="flex justify-center">
+                <TodoItem
+                  title={todo.todo}
+                  description={todo.description}
+                  id={todo._id}
+                  onDelete={handleDeleteTodo}
+                />
+              </div>
+            ))
+          : 'No todo'}
+        <Toaster />
+      </div>
     </div>
   );
 }
