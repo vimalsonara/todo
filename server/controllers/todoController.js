@@ -29,6 +29,25 @@ const create_todo = (req, res) => {
     });
 };
 
+// update todo status
+const update_todo_status = (req, res) => {
+  const id = req.params.id;
+  const { completed } = req.body;
+
+  Todo.findByIdAndUpdate(id, { completed }, { new: true })
+    .then((result) => {
+      if (!result) {
+        res.status(404).json({ error: 'Todo not found' });
+      } else {
+        res.status(200).json(result);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    });
+};
+
 // delete todo
 const delete_todo = (req, res) => {
   const id = req.params.id;
@@ -49,5 +68,6 @@ const delete_todo = (req, res) => {
 module.exports = {
   list_todos,
   create_todo,
+  update_todo_status,
   delete_todo,
 };

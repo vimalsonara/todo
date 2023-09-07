@@ -6,6 +6,8 @@ const todoController = require('../controllers/todoController');
 router.get('/todos', todoController.list_todos);
 // create todos
 router.post('/todos', todoController.create_todo);
+// update todo status
+router.put('/:id', todoController.update_todo_status);
 // delete todos
 router.delete('/:id', todoController.delete_todo);
 
