@@ -1,14 +1,30 @@
-import { Checkbox } from '@/components/ui/checkbox';
-import axios from 'axios';
 import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
+
 interface TodoItemProps {
   title: string;
   description: string;
   id: string;
   onDelete: (id: string) => void;
+  updateStatus: (id: string, completed: boolean) => void;
 }
 
-function TodoItem({ title, description, id, onDelete }: TodoItemProps) {
+function TodoItem({
+  title,
+  description,
+  id,
+  onDelete,
+  updateStatus,
+}: TodoItemProps) {
+  const [isCompleted, setIsCompleted] = useState(false); // Initialize with false
+
+  const handleCheckboxClick = () => {
+    const updatedCompleted = !isCompleted;
+    setIsCompleted(updatedCompleted);
+
+    updateStatus(id, updatedCompleted);
+  };
+
   async function handleDelete() {
     try {
       await onDelete(id);
@@ -24,7 +40,12 @@ function TodoItem({ title, description, id, onDelete }: TodoItemProps) {
         <div className="text-white">{description}</div>
       </div>
       <div className="flex items-center gap-2">
-        <Checkbox className="bg-white" />
+        <input
+          type="checkbox"
+          className="bg-white"
+          checked={isCompleted}
+          onChange={handleCheckboxClick}
+        />
         <Trash2
           color="red"
           className="hover:cursor-pointer"

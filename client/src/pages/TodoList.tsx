@@ -10,7 +10,6 @@ interface Todo {
   todo: string;
   description: string;
   completed: boolean;
-  onDelete: (id: string) => void;
 }
 
 function TodoList() {
@@ -41,6 +40,23 @@ function TodoList() {
     }
   };
 
+  const handleUpdateCompleted = async (id: string, completed: boolean) => {
+    try {
+      await axios.put(APIURL + id, { completed });
+
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo._id === id ? { ...todo, completed } : todo
+        )
+      );
+
+      toast.success('Todo status updated successfully.');
+    } catch (error) {
+      console.error(error, 'update error');
+      toast.error('Failed to update todo status.');
+    }
+  };
+
   return (
     <div>
       <div className=" flex justify-center items-center gap-5">
@@ -60,6 +76,7 @@ function TodoList() {
                   description={todo.description}
                   id={todo._id}
                   onDelete={handleDeleteTodo}
+                  updateStatus={handleUpdateCompleted}
                 />
               </div>
             ))

@@ -26,6 +26,7 @@ function AddTodo() {
         description: data.description,
       });
       if (response.status === 201) {
+        console.log(response);
         toast.success('Todo added successfully');
         navigate('/');
       }
@@ -67,12 +68,12 @@ function AddTodo() {
         )}
         <Button className="bg-blue-500 hover:bg-blue-900">Submit</Button>
       </form>
-      <Toaster />
       <Link to={'/'}>
         <Button className="mt-2" variant={'outline'}>
           Go back
         </Button>
       </Link>
+      <Toaster />
     </div>
   );
 }
