@@ -1,32 +1,27 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const todoRoutes = require('./routes/todoRoutes');
-const Todo = require('./models/todo');
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+import connectDB from "./config/db.js";
+import Todo from "./models/todo.js";
+import todoRoutes from "./routes/todoRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+
+connectDB();
+
+const port = process.env.PORT || 5000;
 
 const app = express();
 
 app.use(cors());
-
-require('dotenv').config();
-
-const dbURI = process.env.MONGO_URI;
-mongoose
-  .connect(dbURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-  });
-
 app.use(express.json());
 
-app.use('/', todoRoutes);
-
-app.listen(process.env.PORT, () => {
-  console.log('listening on port 3000');
+app.use("/", todoRoutes);
+app.use("/api/users", userRoutes);
+app.get("/", (res, req) => res.send("Server is ready"));
+app.use(notFound);
+app.use(errorHandler);
+app.listen(port, () => {
+  console.log(`listening on port ${port}`);
 });

@@ -1,4 +1,4 @@
-const Todo = require('../models/todo');
+import Todo from "../models/todo.js";
 
 // list todos
 const list_todos = (req, res) => {
@@ -6,11 +6,11 @@ const list_todos = (req, res) => {
     .sort({ createdAt: -1 })
     .then((result) => {
       res.json({ todos: result });
-      console.log('list todos');
+      console.log("list todos");
     })
     .catch((error) => {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: "Internal Server Error" });
     });
 };
 
@@ -25,7 +25,7 @@ const create_todo = (req, res) => {
     })
     .catch((error) => {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: "Internal Server Error" });
     });
 };
 
@@ -37,14 +37,14 @@ const update_todo_status = (req, res) => {
   Todo.findByIdAndUpdate(id, { completed }, { new: true })
     .then((result) => {
       if (!result) {
-        res.status(404).json({ error: 'Todo not found' });
+        res.status(404).json({ error: "Todo not found" });
       } else {
         res.status(200).json(result);
       }
     })
     .catch((error) => {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: "Internal Server Error" });
     });
 };
 
@@ -54,20 +54,15 @@ const delete_todo = (req, res) => {
   Todo.findByIdAndDelete(id)
     .then((result) => {
       if (!result) {
-        res.status(404).json({ error: 'Todo not found' });
+        res.status(404).json({ error: "Todo not found" });
       } else {
-        res.status(201).json({ message: 'Todo deleted successfully.' });
+        res.status(201).json({ message: "Todo deleted successfully." });
       }
     })
     .catch((error) => {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: "Internal Server Error" });
     });
 };
 
-module.exports = {
-  list_todos,
-  create_todo,
-  update_todo_status,
-  delete_todo,
-};
+export { list_todos, create_todo, update_todo_status, delete_todo };
