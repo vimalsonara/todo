@@ -19,9 +19,13 @@ app.use(express.json());
 
 app.use("/", todoRoutes);
 app.use("/api/users", userRoutes);
-app.get("/", (res, req) => res.send("Server is ready"));
+
+// error handling
 app.use(notFound);
 app.use(errorHandler);
+
+app.get("/", (req, res) => res.send("Server is ready"));
+
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
