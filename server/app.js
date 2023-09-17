@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
-app.use("/", todoRoutes);
+app.use("/api/todos", todoRoutes);
 app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => res.send("Server is ready"));
