@@ -1,13 +1,18 @@
+import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function SignupForm() {
   const [passwordError, setPasswordError] = useState("");
   const [inputData, setInputData] = useState({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const navigate = useNavigate();
 
   function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -19,11 +24,37 @@ export default function SignupForm() {
     });
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const header = {
+    "Content-Type": "application/json",
+  };
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (inputData.password !== inputData.confirmPassword) {
       setPasswordError("Both password must be same!");
     }
+
+    try {
+      const res = await axios.post(
+        "/api/users/",
+        {
+          name: inputData.name,
+          email: inputData.email,
+          password: inputData.password,
+        },
+        { headers: header }
+      );
+      if (res.status === 201) {
+        toast.success("Signup success.");
+        setInterval(() => {
+          navigate("/login");
+        }, 1000);
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.log(error);
+    }
+
     console.log(inputData);
   }
 
@@ -37,6 +68,17 @@ export default function SignupForm() {
         <h1 className="text-white text-center py-2 text-lg">
           Create an account
         </h1>
+        <label htmlFor="name"></label>
+        <input
+          name="name"
+          className="p-2 block mt-2 rounded-md w-64"
+          type="name"
+          id="name"
+          placeholder="Name"
+          onChange={handleInput}
+          value={inputData.name}
+          required
+        />
         <label htmlFor="email"></label>
         <input
           name="email"
@@ -93,6 +135,7 @@ export default function SignupForm() {
           <span className="text-blue-500 hover:text-blue-900">Login</span>
         </Link>
       </form>
+      <Toaster />
     </div>
   );
 }

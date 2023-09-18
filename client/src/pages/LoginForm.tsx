@@ -1,5 +1,7 @@
+import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function LoginForm() {
   const [inputData, setInputData] = useState({
@@ -17,8 +19,34 @@ export default function LoginForm() {
     });
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const navigate = useNavigate();
+
+  const header = {
+    "Content-Type": "application/json",
+    Authorization: "Bearer your-access-token",
+  };
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    try {
+      const res = await axios.post(
+        "/api/users/auth",
+        {
+          email: inputData.email,
+          password: inputData.password,
+        },
+        { headers: header }
+      );
+      if (res.status === 201) {
+        navigate("/");
+        localStorage.setItem("userId", JSON.stringify(res.data._id));
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+      console.log(error);
+    }
+
     console.log(inputData);
   }
 
@@ -62,6 +90,7 @@ export default function LoginForm() {
           <span className="text-blue-500 hover:text-blue-900">Signup</span>
         </Link>
       </form>
+      <Toaster />
     </div>
   );
 }
