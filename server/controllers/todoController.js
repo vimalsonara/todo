@@ -1,11 +1,15 @@
 import Todo from "../models/todo.js";
 
-// list todos
-const list_todos = (req, res) => {
-  Todo.find()
+// @desc List todos by userId
+// @route POST api/todos
+// @access private
+const listTodos = (req, res) => {
+  const { userId } = req.body;
+
+  Todo.find({ userId })
     .sort({ createdAt: -1 })
-    .then((result) => {
-      res.json({ todos: result });
+    .then((todos) => {
+      res.status(200).json(todos);
       console.log("list todos");
     })
     .catch((error) => {
@@ -14,8 +18,10 @@ const list_todos = (req, res) => {
     });
 };
 
-// create todo
-const create_todo = (req, res) => {
+// @desc Create new todo
+// route POST api/todos/add
+// @access private
+const createTodo = (req, res) => {
   const todo = new Todo(req.body);
 
   todo
@@ -29,10 +35,11 @@ const create_todo = (req, res) => {
     });
 };
 
-// update todo status
-const update_todo_status = (req, res) => {
-  const id = req.params.id;
-  const { completed } = req.body;
+// @desc Update todo status
+// route PUT api/todos/todo
+// @access private
+const updateTodoStatus = (req, res) => {
+  const { completed, id } = req.body;
 
   Todo.findByIdAndUpdate(id, { completed }, { new: true })
     .then((result) => {
@@ -48,9 +55,11 @@ const update_todo_status = (req, res) => {
     });
 };
 
-// delete todo
-const delete_todo = (req, res) => {
-  const id = req.params.id;
+// @desc Delete todo
+// route DELETE api/todos/todo
+// @access priavte
+const deleteTodo = (req, res) => {
+  const id = req.body.id;
   Todo.findByIdAndDelete(id)
     .then((result) => {
       if (!result) {
@@ -65,4 +74,4 @@ const delete_todo = (req, res) => {
     });
 };
 
-export { list_todos, create_todo, update_todo_status, delete_todo };
+export { listTodos, createTodo, updateTodoStatus, deleteTodo };
