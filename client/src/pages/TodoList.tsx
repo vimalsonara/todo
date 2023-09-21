@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
-import TodoItem from '@/components/TodoItem';
-import axios from 'axios';
-import toast, { Toaster } from 'react-hot-toast';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import TodoItem from "@/components/TodoItem";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import Header from "@/components/Header";
+import useUserStore from "@/store/userStore";
 
 interface Todo {
   _id: string;
@@ -14,14 +16,16 @@ interface Todo {
 
 function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
-
+  const { user } = useUserStore();
   const APIURL = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
     async function getTodos() {
       try {
-        const response = await axios.get(APIURL + 'todos');
-        setTodos(response.data.todos);
+        const response = await axios.post("api/todos/", {
+          userId: user?._id,
+        });
+        setTodos(response.data);
       } catch (error) {
         console.log(error);
       }
@@ -33,10 +37,10 @@ function TodoList() {
     try {
       await axios.delete(APIURL + id);
       setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
-      toast.success('Todo deleted successfully.');
+      toast.success("Todo deleted successfully.");
     } catch (error) {
-      console.error(error, 'delete error');
-      toast.error('Failed to delete todo.');
+      console.error(error, "delete error");
+      toast.error("Failed to delete todo.");
     }
   };
 
@@ -50,37 +54,40 @@ function TodoList() {
         )
       );
 
-      toast.success('Todo status updated successfully.');
+      toast.success("Todo status updated successfully.");
     } catch (error) {
-      console.error(error, 'update error');
-      toast.error('Failed to update todo status.');
+      console.error(error, "update error");
+      toast.error("Failed to update todo status.");
     }
   };
 
   return (
     <div>
-      <div className=" flex justify-center items-center gap-5">
+      <Header />
+      <div className="mt-5 flex justify-center items-center gap-5">
         <h1 className="text-center justify-self-center text-2xl font-bold text-white py-3">
           Todolist
         </h1>
-        <Link to={'/addtodo'}>
-          <Button variant={'outline'}>Add</Button>
+        <Link to={"/addtodo"}>
+          <Button variant={"outline"}>Add</Button>
         </Link>
       </div>
       <div className=" flex justify-center flex-col gap-2 pt-3">
-        {todos.length > 0
-          ? todos.map((todo) => (
-              <div key={todo._id} className="flex justify-center">
-                <TodoItem
-                  title={todo.todo}
-                  description={todo.description}
-                  id={todo._id}
-                  onDelete={handleDeleteTodo}
-                  updateStatus={handleUpdateCompleted}
-                />
-              </div>
-            ))
-          : 'No todo'}
+        {todos.length > 0 ? (
+          todos.map((todo) => (
+            <div key={todo._id} className="flex justify-center">
+              <TodoItem
+                title={todo.todo}
+                description={todo.description}
+                id={todo._id}
+                onDelete={handleDeleteTodo}
+                updateStatus={handleUpdateCompleted}
+              />
+            </div>
+          ))
+        ) : (
+          <div className="text-white text-center">No todo found.</div>
+        )}
         <Toaster />
       </div>
     </div>

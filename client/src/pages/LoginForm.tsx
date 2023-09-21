@@ -2,12 +2,15 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import useUserStore from "@/store/userStore";
 
 export default function LoginForm() {
   const [inputData, setInputData] = useState({
     email: "",
     password: "",
   });
+
+  const { login } = useUserStore();
 
   function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -39,8 +42,8 @@ export default function LoginForm() {
         { headers: header }
       );
       if (res.status === 201) {
+        login(res.data);
         navigate("/");
-        localStorage.setItem("userId", JSON.stringify(res.data._id));
       }
     } catch (error: any) {
       toast.error(error.response.data.message);

@@ -1,8 +1,9 @@
-import { Button } from '@/components/ui/button';
-import axios from 'axios';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate, Link } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { useForm, SubmitHandler } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate, Link } from "react-router-dom";
+import useUserStore from "@/store/userStore";
 
 type Inputs = {
   todo: string;
@@ -11,8 +12,7 @@ type Inputs = {
 
 function AddTodo() {
   const navigate = useNavigate();
-
-  const APIURL = import.meta.env.VITE_BASE_URL;
+  const { user } = useUserStore();
 
   const {
     register,
@@ -21,14 +21,15 @@ function AddTodo() {
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const response = await axios.post(APIURL + 'todos', {
+      const response = await axios.post("/api/todos/add", {
         todo: data.todo,
         description: data.description,
+        userId: user?._id,
       });
       if (response.status === 201) {
         console.log(response);
-        toast.success('Todo added successfully');
-        navigate('/');
+        toast.success("Todo added successfully");
+        navigate("/");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -46,30 +47,30 @@ function AddTodo() {
           type="text"
           className={
             errors.description
-              ? 'border-2 border-red-500 rounded p-1 outline-none'
-              : 'rounded p-1 outline-none'
+              ? "border-2 border-red-500 rounded p-1 outline-none"
+              : "rounded p-1 outline-none"
           }
           placeholder="Title*"
-          {...register('todo', { required: true, maxLength: 80 })}
+          {...register("todo", { required: true, maxLength: 80 })}
         />
         {errors.todo && <span className="text-red-500">Title required.</span>}
         <input
           type="text"
           className={
             errors.description
-              ? 'border-2 border-red-500 rounded p-1 outline-none'
-              : 'rounded p-1 outline-none'
+              ? "border-2 border-red-500 rounded p-1 outline-none"
+              : "rounded p-1 outline-none"
           }
           placeholder="Description*"
-          {...register('description', { required: true, maxLength: 100 })}
+          {...register("description", { required: true, maxLength: 100 })}
         />
         {errors.description && (
           <span className="text-red-500">Description required.</span>
         )}
         <Button className="bg-blue-500 hover:bg-blue-900">Submit</Button>
       </form>
-      <Link to={'/'}>
-        <Button className="mt-2" variant={'outline'}>
+      <Link to={"/"}>
+        <Button className="mt-2" variant={"outline"}>
           Go back
         </Button>
       </Link>
