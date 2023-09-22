@@ -1,3 +1,4 @@
+import asyncHandler from "express-async-handler";
 import Todo from "../models/todo.js";
 
 // @desc List todos by userId
@@ -38,40 +39,35 @@ const createTodo = (req, res) => {
 // @desc Update todo status
 // route PUT api/todos/todo
 // @access private
-const updateTodoStatus = (req, res) => {
+const updateTodoStatus = asyncHandler(async (req, res) => {
   const { completed, id } = req.body;
 
-  Todo.findByIdAndUpdate(id, { completed }, { new: true })
-    .then((result) => {
-      if (!result) {
-        res.status(404).json({ error: "Todo not found" });
-      } else {
-        res.status(200).json(result);
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+  const todo = await Todo.findById(id);
+
+  if (todo) {
+    todo.completed = completed;
+    const updatedTodo = await todo.save();
+    res.status(200).json({
+      id: updatedTodo._id,
+      completed: updatedTodo.completed,
     });
-};
+  } else {
+    res.status(404);
+    throw new Error("Todo not found");
+  }
+});
 
 // @desc Delete todo
 // route DELETE api/todos/todo
 // @access priavte
-const deleteTodo = (req, res) => {
+const deleteTodo = asyncHandler(async (req, res) => {
   const id = req.body.id;
-  Todo.findByIdAndDelete(id)
-    .then((result) => {
-      if (!result) {
-        res.status(404).json({ error: "Todo not found" });
-      } else {
-        res.status(201).json({ message: "Todo deleted successfully." });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    });
-};
+  try {
+    const data = await Todo.findByIdAndDelete({ _id: id });
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
 
 export { listTodos, createTodo, updateTodoStatus, deleteTodo };

@@ -1,10 +1,11 @@
-import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
 
 interface TodoItemProps {
   title: string;
   description: string;
   id: string;
+  completed: boolean;
   onDelete: (id: string) => void;
   updateStatus: (id: string, completed: boolean) => void;
 }
@@ -14,6 +15,7 @@ function TodoItem({
   description,
   id,
   onDelete,
+  completed,
   updateStatus,
 }: TodoItemProps) {
   const [isCompleted, setIsCompleted] = useState(false); // Initialize with false
@@ -29,10 +31,9 @@ function TodoItem({
     try {
       await onDelete(id);
     } catch (error) {
-      console.error(error, 'todo error');
+      console.error(error, "todo error");
     }
   }
-
   return (
     <div className="min-w-[500px] flex justify-between items-center border p-2 rounded hover:ring-2 hover:ring-blue-500 hover:border-none ">
       <div>
@@ -43,7 +44,7 @@ function TodoItem({
         <input
           type="checkbox"
           className="bg-white"
-          checked={isCompleted}
+          checked={completed}
           onChange={handleCheckboxClick}
         />
         <Trash2

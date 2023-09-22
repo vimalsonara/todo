@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
-import useUserStore from "@/store/userStore";
+import useUserStore from "../store/UserStore.ts";
 
 interface Todo {
   _id: string;
@@ -19,6 +19,7 @@ function TodoList() {
   const { user } = useUserStore();
   const APIURL = import.meta.env.VITE_BASE_URL;
 
+  // LIST ALL TODOS API
   useEffect(() => {
     async function getTodos() {
       try {
@@ -33,9 +34,10 @@ function TodoList() {
     getTodos();
   }, []);
 
+  // DELETE TODO API
   const handleDeleteTodo = async (id: string) => {
     try {
-      await axios.delete(APIURL + id);
+      await axios.post(`/api/todos/todo`, { id });
       setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
       toast.success("Todo deleted successfully.");
     } catch (error) {
@@ -44,9 +46,13 @@ function TodoList() {
     }
   };
 
+  // UPDATE TODO STATUS API
   const handleUpdateCompleted = async (id: string, completed: boolean) => {
     try {
-      await axios.put(APIURL + id, { completed });
+      await axios.put("/api/todos/todo", {
+        id,
+        completed,
+      });
 
       setTodos((prevTodos) =>
         prevTodos.map((todo) =>
@@ -80,6 +86,7 @@ function TodoList() {
                 title={todo.todo}
                 description={todo.description}
                 id={todo._id}
+                completed={todo.completed}
                 onDelete={handleDeleteTodo}
                 updateStatus={handleUpdateCompleted}
               />
