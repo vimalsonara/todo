@@ -3,7 +3,7 @@ import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
-import useUserStore from "@/store/userStore";
+import useUserStore from "../store/UserStore.ts";
 
 type Inputs = {
   todo: string;
@@ -29,7 +29,9 @@ function AddTodo() {
       if (response.status === 201) {
         console.log(response);
         toast.success("Todo added successfully");
-        navigate("/");
+        setTimeout(() => {
+          navigate("/");
+        }, 100);
       }
     } catch (error: any) {
       toast.error(error.message);

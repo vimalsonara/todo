@@ -7,7 +7,7 @@ import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div className="h-screen bg-neutral-900">
+    <div className="min-h-screen bg-neutral-900">
       <Routes>
         <Route path="login" element={<LoginForm />} />
         <Route path="signup" element={<SignupForm />} />

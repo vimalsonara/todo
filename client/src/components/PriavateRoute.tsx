@@ -1,4 +1,4 @@
-import useUserStore from "@/store/userStore";
+import useUserStore from "../store/UserStore.ts";
 import { Navigate, Outlet } from "react-router-dom";
 
 function PriavateRoute() {

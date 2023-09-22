@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-import useUserStore from "@/store/userStore";
+import useUserStore from "../store/UserStore.ts";
 
 export default function LoginForm() {
   const [inputData, setInputData] = useState({
