@@ -1,14 +1,14 @@
 import asyncHandler from "express-async-handler";
-import generateToken from "../utils/generateToken.js";
-import User from "../models/userModel.js";
+import generateToken from "../utils/generateToken";
+import User, { UserType } from "../models/userModel";
 
 // @desc    Auth user/set token
 // route    POST api/user/auth
 // @access  public
-const authUser = asyncHandler(async (req, res) => {
+export const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user: UserType | null = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
@@ -26,7 +26,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @desc    Register new user
 // route    POST api/users
 // @access  public
-const registerUser = asyncHandler(async (req, res) => {
+export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   const userExist = await User.findOne({ email });
@@ -58,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
 // @desc    Logout user
 // route    POST api/users/logout
 // @access  public
-const logoutUser = asyncHandler(async (req, res) => {
+export const logoutUser = asyncHandler(async (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
     expires: new Date(0),
@@ -70,21 +70,21 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @desc    Get user profile
 // route    GET api/usersd/profile
 // @access  private
-const getUserProfile = asyncHandler(async (req, res) => {
-  const user = {
-    _id: req.user._id,
-    name: req.user.name,
-    email: req.user.email,
-  };
+export const getUserProfile = asyncHandler(async (req, res) => {
+  // const user = {
+  //   _id: req.user._id,
+  //   name: req.user.name,
+  //   email: req.user.email,
+  // };
 
-  res.status(200).json(user);
+  res.status(200).json(res.json());
 });
 
 // @desc    Update user profile
 // route    PUT api/users/profile
 // @access  private
-const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
+export const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.body.user._id);
 
   if (user) {
     user.name = req.body.name || user.name;
@@ -105,11 +105,3 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
-
-export {
-  authUser,
-  registerUser,
-  logoutUser,
-  getUserProfile,
-  updateUserProfile,
-};
