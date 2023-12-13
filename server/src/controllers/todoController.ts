@@ -1,10 +1,11 @@
 import asyncHandler from "express-async-handler";
 import Todo from "../models/todo.js";
+import { Request, Response } from "express";
 
 // @desc List todos by userId
 // @route POST api/todos
 // @access private
-const listTodos = (req, res) => {
+export const listTodos = (req: Request, res: Response) => {
   const { userId } = req.body;
 
   Todo.find({ userId })
@@ -22,7 +23,7 @@ const listTodos = (req, res) => {
 // @desc Create new todo
 // route POST api/todos/add
 // @access private
-const createTodo = (req, res) => {
+export const createTodo = (req: Request, res: Response) => {
   const todo = new Todo(req.body);
 
   todo
@@ -39,7 +40,7 @@ const createTodo = (req, res) => {
 // @desc Update todo status
 // route PUT api/todos/todo
 // @access private
-const updateTodoStatus = asyncHandler(async (req, res) => {
+export const updateTodoStatus = asyncHandler(async (req, res) => {
   const { completed, id } = req.body;
 
   const todo = await Todo.findById(id);
@@ -60,7 +61,7 @@ const updateTodoStatus = asyncHandler(async (req, res) => {
 // @desc Delete todo
 // route DELETE api/todos/todo
 // @access priavte
-const deleteTodo = asyncHandler(async (req, res) => {
+export const deleteTodo = asyncHandler(async (req, res) => {
   const id = req.body.id;
   try {
     const data = await Todo.findByIdAndDelete({ _id: id });
@@ -69,5 +70,3 @@ const deleteTodo = asyncHandler(async (req, res) => {
     res.status(400).json(error);
   }
 });
-
-export { listTodos, createTodo, updateTodoStatus, deleteTodo };

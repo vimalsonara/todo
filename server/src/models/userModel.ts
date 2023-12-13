@@ -1,7 +1,14 @@
-import mongoose from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 
-const userSchema = mongoose.Schema(
+export interface UserType extends Document {
+  name: string;
+  email: string;
+  password: string;
+  matchPassword: (enteredPassword: string) => Promise<boolean>;
+}
+
+const userSchema = new Schema<UserType>(
   {
     name: {
       type: String,
@@ -29,10 +36,10 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-userSchema.methods.matchPassword = async function (enteredPassword) {
+userSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
+const User = model<UserType>("User", userSchema);
 
 export default User;
