@@ -8,20 +8,39 @@ import bcrypt from "bcryptjs";
 // route    POST api/user/auth
 // @access  public
 export const authUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user: UserType | null = await User.findOne({ email });
+    if (!email || !password) {
+      res.status(400).json("Any details can't be empty");
+    }
 
-  if (user && (await user.matchPassword(password))) {
-    generateToken(res, user._id);
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
+    const user = await db.user.findUnique({
+      where: {
+        email,
+      },
     });
-  } else {
-    res.status(400);
-    throw new Error("Invalid email or password");
+
+    if (!user) {
+      res.status(400);
+      throw new Error("User not found");
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (passwordMatch) {
+      generateToken(res, user.id);
+      res.status(201).json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      });
+    } else {
+      res.status(400);
+      throw new Error("Invalid password");
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
 
