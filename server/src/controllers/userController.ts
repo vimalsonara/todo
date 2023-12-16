@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import generateToken from "../utils/generateToken";
 import User, { UserType } from "../models/userModel";
+import db from "../config/db";
+import bcrypt from "bcryptjs";
 
 // @desc    Auth user/set token
 // route    POST api/user/auth
@@ -27,31 +29,47 @@ export const authUser = asyncHandler(async (req, res) => {
 // route    POST api/users
 // @access  public
 export const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  const userExist = await User.findOne({ email });
+    if (!name || !email || !password) {
+      res.status(400).json("Any details can't be empty");
+    }
 
-  if (userExist) {
-    res.status(400);
-    throw new Error("User already exists");
-  }
-
-  const user = await User.create({
-    name,
-    email,
-    password,
-  });
-
-  if (user) {
-    generateToken(res, user._id);
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
+    const userExist = await db.user.findUnique({
+      where: {
+        email,
+      },
     });
-  } else {
-    res.status(400);
-    throw new Error("Invalid user data");
+
+    if (userExist) {
+      res.status(400);
+      throw new Error("Email already exist");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await db.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    if (user) {
+      generateToken(res, user.id);
+      res.status(201).json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      });
+    } else {
+      res.status(400);
+      throw new Error("Invalid user data");
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -77,7 +95,7 @@ export const getUserProfile = asyncHandler(async (req, res) => {
   //   email: req.user.email,
   // };
 
-  res.status(200).json(res.json());
+  res.status(200).json("profile");
 });
 
 // @desc    Update user profile
