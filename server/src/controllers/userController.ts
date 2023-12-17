@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
 import db from "../config/db";
-import User from "../models/userModel";
 import generateToken from "../utils/generateToken";
 
 // @desc    Auth user/set token
@@ -143,24 +142,45 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 // route    PUT api/users/profile
 // @access  private
 export const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.body.user._id);
+  try {
+    const { userId } = req.body;
 
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-
-    if (req.body.password) {
-      user.password = req.body.password;
+    if (!userId) {
+      res.status(400).json("User id required");
     }
 
-    const updatedUser = await user.save();
-    res.status(200).json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
+    const user = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
     });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
+
+    console.log(user, "user");
+
+    if (user) {
+      const updateUserData = {
+        name: req.body.name || user.name,
+        email: req.body.email || user.email,
+        password: req.body.password
+          ? await bcrypt.hash(req.body.password, 10)
+          : user.password,
+      };
+
+      const updateUser = await db.user.update({
+        where: { id: userId },
+        data: updateUserData,
+      });
+
+      res.status(200).json({
+        id: updateUser.id,
+        name: updateUser.name,
+        email: updateUser.email,
+      });
+    } else {
+      res.status(404);
+      throw new Error("User not found");
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 });
