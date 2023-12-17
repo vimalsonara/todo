@@ -155,8 +155,6 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
       },
     });
 
-    console.log(user, "user");
-
     if (user) {
       const updateUserData = {
         name: req.body.name || user.name,
