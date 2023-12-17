@@ -1,40 +1,49 @@
-import jwt from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import User, { UserType } from "../models/userModel.js";
-import { Schema } from "mongoose";
-import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import db from "../config/db.js";
 
 export interface IRequest extends Request {
-  userId?: Schema.Types.ObjectId;
+  id?: number;
 }
+
+type UserType = {
+  id: number;
+  email: string;
+  name: string | null;
+  password: string;
+};
 
 export const protect = asyncHandler(
   async (req: IRequest, res: Response, next: NextFunction) => {
-    const token = req.cookies.token;
+    try {
+      const token = req.cookies.token;
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-          userId: Schema.Types.ObjectId;
-        };
-
-        const user: UserType = await User.findById(decoded.userId).select(
-          "-password"
-        );
-
-        if (user) {
-          req.headers["user"] = user._id;
-          next();
-        }
+      if (!token) {
         res.status(401);
-        throw new Error("Not authorized, invalid token");
-      } catch (error) {
-        res.status(401);
-        throw new Error("Not authorized, invalid token");
+        throw new Error("Not authorized, no token");
       }
-    } else {
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+        userId: number;
+      };
+
+      const user: UserType | null = await db.user.findUnique({
+        where: {
+          id: decoded.userId,
+        },
+      });
+
+      if (user) {
+        req.headers["user"] = user.id.toString();
+        next();
+      } else {
+        res.status(401);
+        throw new Error("User not found");
+      }
+    } catch (error) {
       res.status(401);
-      throw new Error("Not authorized, no token");
+      throw new Error("Not authorized, invalid token");
     }
   }
 );
