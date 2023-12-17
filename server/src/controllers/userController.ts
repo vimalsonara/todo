@@ -1,8 +1,8 @@
-import asyncHandler from "express-async-handler";
-import generateToken from "../utils/generateToken";
-import User, { UserType } from "../models/userModel";
-import db from "../config/db";
 import bcrypt from "bcryptjs";
+import asyncHandler from "express-async-handler";
+import db from "../config/db";
+import User from "../models/userModel";
+import generateToken from "../utils/generateToken";
 
 // @desc    Auth user/set token
 // route    POST api/user/auth
@@ -108,13 +108,35 @@ export const logoutUser = asyncHandler(async (req, res) => {
 // route    GET api/usersd/profile
 // @access  private
 export const getUserProfile = asyncHandler(async (req, res) => {
-  // const user = {
-  //   _id: req.user._id,
-  //   name: req.user.name,
-  //   email: req.user.email,
-  // };
+  try {
+    const { userId } = req.body;
 
-  res.status(200).json("profile");
+    if (!userId) {
+      res.status(400).json("User id can't be empty");
+    }
+
+    const user = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    if (user) {
+      res.status(200).json({
+        user,
+      });
+    } else {
+      res.status(400);
+      throw new Error("User not found");
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // @desc    Update user profile
