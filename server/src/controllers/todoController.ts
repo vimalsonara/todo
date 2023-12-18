@@ -1,8 +1,6 @@
-import asyncHandler from "express-async-handler";
-import Todo from "../models/todo.js";
 import { Request, Response } from "express";
+import asyncHandler from "express-async-handler";
 import db from "../config/db.js";
-import { error } from "console";
 
 // @desc List todos by userId
 // @route POST api/todos
