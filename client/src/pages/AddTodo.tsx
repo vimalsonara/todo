@@ -6,8 +6,8 @@ import { useNavigate, Link } from "react-router-dom";
 import useUserStore from "../store/UserStore.ts";
 
 type Inputs = {
-  todo: string;
-  description: string;
+  title: string;
+  content: string;
 };
 
 function AddTodo() {
@@ -22,9 +22,9 @@ function AddTodo() {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const response = await axios.post("/api/todos/add", {
-        todo: data.todo,
-        description: data.description,
-        userId: user?._id,
+        title: data.title,
+        content: data.content,
+        userId: user?.id,
       });
       if (response.status === 201) {
         console.log(response);
@@ -48,25 +48,25 @@ function AddTodo() {
         <input
           type="text"
           className={
-            errors.description
+            errors.content
               ? "border-2 border-red-500 rounded p-1 outline-none"
               : "rounded p-1 outline-none"
           }
           placeholder="Title*"
-          {...register("todo", { required: true, maxLength: 80 })}
+          {...register("title", { required: true, maxLength: 80 })}
         />
-        {errors.todo && <span className="text-red-500">Title required.</span>}
+        {errors.title && <span className="text-red-500">Title required.</span>}
         <input
           type="text"
           className={
-            errors.description
+            errors.content
               ? "border-2 border-red-500 rounded p-1 outline-none"
               : "rounded p-1 outline-none"
           }
           placeholder="Description*"
-          {...register("description", { required: true, maxLength: 100 })}
+          {...register("content", { required: true, maxLength: 100 })}
         />
-        {errors.description && (
+        {errors.content && (
           <span className="text-red-500">Description required.</span>
         )}
         <Button className="bg-blue-500 hover:bg-blue-900">Submit</Button>
