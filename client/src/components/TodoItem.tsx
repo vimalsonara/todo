@@ -4,10 +4,10 @@ import { useState } from "react";
 interface TodoItemProps {
   title: string;
   description: string;
-  id: string;
+  id: number;
   completed: boolean;
-  onDelete: (id: string) => void;
-  updateStatus: (id: string, completed: boolean) => void;
+  onDelete: (id: number) => void;
+  updateStatus: (id: number, completed: boolean) => void;
 }
 
 function TodoItem({
@@ -18,22 +18,14 @@ function TodoItem({
   completed,
   updateStatus,
 }: TodoItemProps) {
-  const [isCompleted, setIsCompleted] = useState(false); // Initialize with false
-
   const handleCheckboxClick = () => {
-    const updatedCompleted = !isCompleted;
-    setIsCompleted(updatedCompleted);
-
-    updateStatus(id, updatedCompleted);
+    updateStatus(id, !completed);
   };
 
-  async function handleDelete() {
-    try {
-      await onDelete(id);
-    } catch (error) {
-      console.error(error, "todo error");
-    }
-  }
+  const handleDelete = () => {
+    onDelete(id);
+  };
+  console.log(completed);
   return (
     <div className="min-w-[500px] flex justify-between items-center border p-2 rounded hover:ring-2 hover:ring-blue-500 hover:border-none ">
       <div>

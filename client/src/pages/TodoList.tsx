@@ -8,10 +8,10 @@ import Header from "@/components/Header";
 import useUserStore from "../store/UserStore.ts";
 
 interface Todo {
-  _id: string;
-  todo: string;
-  description: string;
-  completed: boolean;
+  id: number;
+  title: string;
+  content: string;
+  isDone: boolean;
 }
 
 function TodoList() {
@@ -24,7 +24,7 @@ function TodoList() {
     async function getTodos() {
       try {
         const response = await axios.post("api/todos/", {
-          userId: user?._id,
+          userId: user?.id,
         });
         setTodos(response.data);
       } catch (error) {
@@ -35,10 +35,10 @@ function TodoList() {
   }, []);
 
   // DELETE TODO API
-  const handleDeleteTodo = async (id: string) => {
+  const handleDeleteTodo = async (id: number) => {
     try {
-      await axios.post(`/api/todos/todo`, { id });
-      setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
+      await axios.delete("api/todos/todo", { data: { id } });
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
       toast.success("Todo deleted successfully.");
     } catch (error) {
       console.error(error, "delete error");
@@ -47,16 +47,16 @@ function TodoList() {
   };
 
   // UPDATE TODO STATUS API
-  const handleUpdateCompleted = async (id: string, completed: boolean) => {
+  const handleUpdateCompleted = async (id: number, completed: boolean) => {
     try {
-      await axios.put("/api/todos/todo", {
+      await axios.post("/api/todos/todo", {
         id,
-        completed,
+        isDone: completed,
       });
 
       setTodos((prevTodos) =>
         prevTodos.map((todo) =>
-          todo._id === id ? { ...todo, completed } : todo
+          todo.id === id ? { ...todo, isDone: completed } : todo
         )
       );
 
@@ -66,7 +66,7 @@ function TodoList() {
       toast.error("Failed to update todo status.");
     }
   };
-
+  console.log(todos);
   return (
     <div>
       <Header />
@@ -81,12 +81,12 @@ function TodoList() {
       <div className=" flex justify-center flex-col gap-2 pt-3">
         {todos.length > 0 ? (
           todos.map((todo) => (
-            <div key={todo._id} className="flex justify-center">
+            <div key={todo.id} className="flex justify-center">
               <TodoItem
-                title={todo.todo}
-                description={todo.description}
-                id={todo._id}
-                completed={todo.completed}
+                title={todo.title}
+                description={todo.content}
+                id={todo.id}
+                completed={todo.isDone}
                 onDelete={handleDeleteTodo}
                 updateStatus={handleUpdateCompleted}
               />
