@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
-import TodoItem from "@/components/TodoItem";
-import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import Header from "@/components/Header";
+import TodoItem from "@/components/TodoItem";
+import { Button } from "@/components/ui/button";
+import { api } from "@/config/api.ts";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
 import useUserStore from "../store/UserStore.ts";
 
 interface Todo {
@@ -17,13 +18,12 @@ interface Todo {
 function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const { user } = useUserStore();
-  const APIURL = import.meta.env.VITE_BASE_URL;
 
   // LIST ALL TODOS API
   useEffect(() => {
     async function getTodos() {
       try {
-        const response = await axios.post("api/todos/", {
+        const response = await api.post("api/todos/", {
           userId: user?.id,
         });
         setTodos(response.data);
@@ -37,7 +37,7 @@ function TodoList() {
   // DELETE TODO API
   const handleDeleteTodo = async (id: number) => {
     try {
-      await axios.delete("api/todos/todo", { data: { id } });
+      await api.delete("api/todos/todo", { data: { id } });
       setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
       toast.success("Todo deleted successfully.");
     } catch (error) {
@@ -49,7 +49,7 @@ function TodoList() {
   // UPDATE TODO STATUS API
   const handleUpdateCompleted = async (id: number, completed: boolean) => {
     try {
-      await axios.post("/api/todos/todo", {
+      await api.post("/api/todos/todo", {
         id,
         isDone: completed,
       });

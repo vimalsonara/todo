@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { api } from "@/config/api.ts";
+import { SubmitHandler, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "../store/UserStore.ts";
 
 type Inputs = {
@@ -21,7 +21,7 @@ function AddTodo() {
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const response = await axios.post("/api/todos/add", {
+      const response = await api.post("/api/todos/add", {
         title: data.title,
         content: data.content,
         userId: user?.id,

@@ -1,7 +1,7 @@
-import axios from "axios";
+import { api } from "@/config/api";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignupForm() {
   const [passwordError, setPasswordError] = useState("");
@@ -35,7 +35,7 @@ export default function SignupForm() {
     }
 
     try {
-      const res = await axios.post(
+      const res = await api.post(
         "/api/users/",
         {
           name: inputData.name,

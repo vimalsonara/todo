@@ -1,7 +1,7 @@
-import axios from "axios";
+import { api } from "@/config/api.ts";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "../store/UserStore.ts";
 
 export default function LoginForm() {
@@ -11,7 +11,6 @@ export default function LoginForm() {
   });
 
   const { login } = useUserStore();
-
   function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
     setInputData((prevInputData) => {
@@ -33,7 +32,7 @@ export default function LoginForm() {
     event.preventDefault();
 
     try {
-      const res = await axios.post(
+      const res = await api.post(
         "/api/users/auth",
         {
           email: inputData.email,

@@ -1,6 +1,6 @@
-import useUserStore from "../store/UserStore.ts";
+import { api } from "@/config/api.ts";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import useUserStore from "../store/UserStore.ts";
 
 function Header() {
   const { logout } = useUserStore();
@@ -12,7 +12,7 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      const res = await axios.post("/api/users/logout", {
+      const res = await api.post("/api/users/logout", {
         headers: header,
       });
       if (res) {
