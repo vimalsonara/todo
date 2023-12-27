@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import todoRoutes from "./routes/todoRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import path from "path";
 
 const port = process.env.PORT || 5000;
 
@@ -20,6 +21,14 @@ app.use(cookieParser());
 
 app.use("/api/todos", todoRoutes);
 app.use("/api/users", userRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
+  app.use(express.static(path.resolve(__dirname, "dist/public")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "dist", "public", "index.html"));
+  });
+}
 
 app.get("/", (req, res) => res.send("Server is ready"));
 
