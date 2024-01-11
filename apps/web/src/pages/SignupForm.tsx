@@ -46,9 +46,9 @@ export default function SignupForm() {
       );
       if (res.status === 201) {
         toast.success("Signup success.");
-        setInterval(() => {
+        setTimeout(() => {
           navigate("/login");
-        }, 1000);
+        },1000)
       }
     } catch (error: any) {
       toast.error(error.response.data.message);
