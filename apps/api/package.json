@@ -4,9 +4,10 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
-    "build": "tsc",
-    "start": "cd ../web && pnpm build && rm -rf ../api/dist/public && mkdir -p ../api/dist/public && mv ./dist/* ../api/dist/public",
-    "dev": "nodemon",
+    "start": "node dist/app.ts",
+    "dev": "tsup --watch --onSuccess \"node dist/app.js\"",
+    "build": "tsup",
+    "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/"
   },
@@ -34,8 +35,8 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.10.4",
     "@types/pg": "^8.10.9",
-    "nodemon": "^3.0.2",
     "prisma": "^5.7.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.1"
   }
 }
