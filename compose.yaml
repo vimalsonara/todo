@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  todo-db:
+    image: postgres:16.1
+    restart: always
+    container_name: todo-db
+    ports:
+      - "5555:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata-todo:/var/lib/postgresql/data
+
+volumes:
+  pgdata-todo:
