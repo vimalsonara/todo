@@ -2,11 +2,12 @@ import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
 import db from "../config/db";
 import generateToken from "../utils/generateToken";
+import { Request, Response } from "express";
 
 // @desc    Auth user/set token
 // route    POST api/user/auth
 // @access  public
-export const authUser = asyncHandler(async (req, res) => {
+export const authUser = asyncHandler(async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -28,11 +29,11 @@ export const authUser = asyncHandler(async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (passwordMatch) {
-      generateToken(res, user.id);
       res.status(201).json({
         id: user.id,
         name: user.name,
         email: user.email,
+        token: generateToken(res, user.id),
       });
     } else {
       res.status(400);
@@ -76,7 +77,6 @@ export const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-      generateToken(res, user.id);
       res.status(201).json({
         id: user.id,
         name: user.name,
